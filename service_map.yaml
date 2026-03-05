@@ -1,0 +1,57 @@
+# SERVICE_MAP.yaml - Major services/modules in this repository
+# Source: actual repository structure and code (no scripts/tooling generated)
+
+services:
+  - name: graphql-poc
+    artifact_id: graphql-poc
+    description: GraphQL wrapper over DigiCert MPKI REST API for certificate search; single deployable Spring Boot application.
+    responsibility: |
+      Expose certificate search via GraphQL; validate Cookie/Request-ID; orchestrate
+      parallel or single REST calls to DigiCert; trigger async CSV export; map REST
+      responses to GraphQL types; centralize error handling and observability.
+    key_directories:
+      - src/main/java/com/digicert/certificate/
+      - src/main/resources/
+    main_entrypoints:
+      - file: src/main/java/com/digicert/certificate/GraphqlPocApplication.java
+        type: Spring Boot main
+      - file: src/main/java/com/digicert/certificate/resolver/CertificateQueryResolver.java
+        type: GraphQL Query resolver (certificateSearch)
+    external_dependencies:
+      - name: DigiCert MPKI REST API
+        role: Backend for certificate search
+        config_key: rest.api.base-url
+        endpoint: /certificate-search (GET, query params)
+        auth: Cookie header (session); optional X-API-Key via rest.api.x-api-key
+      - name: AWS S3
+        role: CSV export storage
+        config: csv.export.s3.* (bucket, region, folder-prefix, use-iam-role)
+        used_by: AsyncCsvExportService
+      - name: AWS SSM Parameter Store
+        role: Runtime configuration (e.g. digicert_base_url, New Relic key)
+        config: aws.parameterstore.*
+        used_by: ParameterStoreService
+    database: Not identifiable from code. No JPA/DataSource/flyway/liquibase; data comes from DigiCert REST API.
+
+modules_within_app:
+  - name: resolver
+    path: src/main/java/com/digicert/certificate/resolver/
+    responsibility: GraphQL query mapping; header validation (Cookie, Request-ID); trigger async CSV export; delegate to CertificateService.
+  - name: service
+    path: src/main/java/com/digicert/certificate/service/
+    responsibility: Certificate search orchestration (single vs parallel batches), async CSV export (batched REST + local/S3), Parameter Store access.
+  - name: client
+    path: src/main/java/com/digicert/certificate/client/
+    responsibility: WebClient-based HTTP client for DigiCert /certificate-search; error mapping (401/400/4xx/5xx) and New Relic reporting.
+  - name: config
+    path: src/main/java/com/digicert/certificate/config/
+    responsibility: WebClient, GraphQL exception resolver, async executor (csvExportExecutor), Tomcat, parallel processing, CSV export, Parameter Store, REST client.
+  - name: model
+    path: src/main/java/com/digicert/certificate/model/
+    responsibility: DTOs and entities for GraphQL/REST: CertificateSearchResult, PublicCertificateDetails, BatchRequest/BatchResult, PageInfo, CertificateEdge/Connection, enums.
+  - name: exception
+    path: src/main/java/com/digicert/certificate/exception/
+    responsibility: CertificateException, ApiException, AuthenticationException, SystemException; used by resolver config and client.
+  - name: util
+    path: src/main/java/com/digicert/certificate/util/
+    responsibility: LogSanitizer for safe logging of PII/sensitive data.

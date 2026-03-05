@@ -1,0 +1,28 @@
+# DB_SCHEMA_INDEX.yaml - Database and persistence in this repository
+# Only real files; excludes generated/vendor/build.
+
+migration_files: []
+# No Flyway, Liquibase, or other migration artifacts found under src or project root.
+
+orm_models_entities:
+  # No JPA @Entity or @Table in codebase. The following are JSON/DTO mapping classes
+  # used for REST response deserialization and GraphQL type mapping, not DB persistence.
+  - file_path: src/main/java/com/digicert/certificate/model/entity/PublicCertificateDetails.java
+    purpose: REST response / GraphQL type mapping (Jackson @JsonProperty)
+  - file_path: src/main/java/com/digicert/certificate/model/entity/CustomAttribute.java
+    purpose: Nested type for certificate attributes
+  - file_path: src/main/java/com/digicert/certificate/model/entity/CertificateStatus.java
+    purpose: Enum/type for status
+  - file_path: src/main/java/com/digicert/certificate/model/entity/CertificateIssueType.java
+    purpose: Enum for cert_issue filter and GraphQL enum
+
+key_tables_and_relationships: []
+# No application database. Certificate data is sourced from DigiCert REST API.
+
+module_table_access: []
+# No modules access a local DB; CertificateRestClient and AsyncCsvExportService use external API and S3.
+
+summary: |
+  This application does not use a database. It is a GraphQL wrapper over the DigiCert MPKI REST API.
+  All "entity" classes in model.entity are DTOs for API/GraphQL mapping. Persistence is external
+  (DigiCert API; optional CSV export to local disk or S3).

@@ -1,0 +1,28 @@
+# CONTRACTS_INDEX.yaml - API and event contracts in this repository
+# Only real files; excludes generated/vendor/build.
+
+api_contracts:
+  - type: GraphQL
+    owner_module: certificate (graphql-poc)
+    file_path: src/main/resources/graphql/schema.graphqls
+    description: Single schema defining Query (certificateSearch), types (CertificateSearchResult, PublicCertificateDetails, CustomAttribute), and enum CertificateIssueType.
+    versioning: Not identifiable from code. No version in schema or path.
+    entrypoint: POST /graphql (spring.graphql.path); GraphiQL at /graphiql when enabled.
+
+  # DigiCert REST contract is consumed, not defined in this repo
+  - type: REST_consumed
+    owner_module: external (DigiCert MPKI)
+    file_path: Not in repository
+    description: GET /certificate-search with query params (offset, limit, sort, account_id, business_unit_id, etc.); JSON response mapped to CertificateSearchResult/PublicCertificateDetails. Documented only via client code in CertificateRestClient.java and entity/DTO mappings.
+    versioning: Base URL configurable (rest.api.base-url); API version not explicitly versioned in code.
+
+# OpenAPI/Swagger: None found in src.
+# Protobuf: None found.
+
+event_definitions:
+  # Kafka/AMQP/SQS: None found in repository.
+  # Async CSV export is in-process @Async; no event schema files.
+  - type: in_process_async
+    owner_module: certificate
+    description: AsyncCsvExportService.exportCertificatesAsync triggered per GraphQL request; no outbound topic or queue contract in repo.
+    file_path: Not applicable (no event schema files).
