@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArchMind – Chat</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>ArchMind</h1>
+      <p class="tagline">architectural brain of the organization</p>
+      <p class="description">Ask me anything about your DigiCert tech.</p>
+    </header>
+
+    <main class="chat-container">
+      <div id="messages" class="messages">
+        <div class="welcome">
+          <p>Send a message or attach files (.txt, .doc, .docx, .png).</p>
+        </div>
+      </div>
+
+      <form id="chat-form" class="input-area">
+        <div class="input-row">
+          <label class="file-btn" for="file-input" title="Add file">
+            <span>📎</span>
+          </label>
+          <input type="file" id="file-input" accept=".txt,.doc,.docx,.png,image/png" multiple hidden />
+          <input type="text" id="text-input" placeholder="Type your message..." autocomplete="off" />
+          <button type="submit" id="send-btn">Send</button>
+        </div>
+        <div id="file-list" class="file-list"></div>
+      </form>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
